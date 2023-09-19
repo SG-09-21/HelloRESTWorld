@@ -20,19 +20,19 @@ public class StudentiServiceImplementation implements StudentService {
 
     @Override
     public Iterable<Student> getALLStudents() {
-        var students = repository.getALLStudents();
+        var students = repository.findAll();
         return students;
     }
 
     @Override
     public Optional<Student> findStudentById(long id) {
-        var student1 = repository.findStudentById(id);
+        var student1 = repository.findById(id);
         return student1;
     }
 
     @Override
     public Student create(Student s) {
-        var student = repository.create(s);
+        var student = repository.save(s);
         return student;
     }
 }

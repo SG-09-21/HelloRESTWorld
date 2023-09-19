@@ -26,6 +26,13 @@ public class Student {
         this.birthdate = birthdate;
     }
 
+    public Student(){
+    }
+
+    public String getFullname(){
+        return getFirstName() + " " + getLastName();
+    }
+
     public long getId() {
         return id;
     }

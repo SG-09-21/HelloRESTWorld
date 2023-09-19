@@ -2,6 +2,7 @@ package org.generation.HelloRESTWorld.model.repositories.implementation;
 
 import org.generation.HelloRESTWorld.model.Student;
 import org.generation.HelloRESTWorld.model.repositories.abstraction.StudentRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
 import javax.xml.transform.Result;
@@ -9,9 +10,11 @@ import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
+@Profile("jdbc")
 public class JDBCStudentRepository implements StudentRepository {
 
     public final static String JDBC_URL = "jdbc:mysql://localhost:3306/db_example";
@@ -75,8 +78,8 @@ public class JDBCStudentRepository implements StudentRepository {
     */
 
     @Override
-    public Iterable<Student> getALLStudents() { //TRY con Risorse
-        Collection<Student> students = new ArrayList<>();
+    public List<Student> findAll() { //TRY con Risorse
+        List<Student> students = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              Statement statement = connection.createStatement();
@@ -97,7 +100,7 @@ public class JDBCStudentRepository implements StudentRepository {
     }
 
     @Override
-    public Optional<Student> findStudentById(long id) {
+    public Optional<Student> findById(long id) {
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_STUDENT_BY_ID);
@@ -120,7 +123,7 @@ public class JDBCStudentRepository implements StudentRepository {
     }
 
     @Override
-    public Student create(Student s) {
+    public Student save(Student s) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_STUDENT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, s.getFirstName());
