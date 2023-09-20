@@ -64,7 +64,6 @@ public class StudentController {
     }
 
     // Metodo per creare un nuovo studente
-
     @PostMapping(value = "/student")
     public ResponseEntity<StudentDto> createStudentDto(StudentDto studentDto){
         Student s = studentDto.toStudent();
