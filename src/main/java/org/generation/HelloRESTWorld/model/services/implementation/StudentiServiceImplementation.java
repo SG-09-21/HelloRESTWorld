@@ -16,6 +16,7 @@ public class StudentiServiceImplementation implements StudentService {
     @Autowired
     public StudentiServiceImplementation(StudentRepository repository) {
         this.repository = repository;
+        System.out.println("Il repository é: " + this.repository.getClass().getName());
     }
 
     // Implementazione del metodo per ottenere tutti gli studenti

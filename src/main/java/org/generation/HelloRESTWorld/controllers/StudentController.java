@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
@@ -60,5 +61,15 @@ public class StudentController {
         Student s = studentOptional.get();
         StudentDto sDto = new StudentDto(s.getId(), s.getFullname());
         return new ResponseEntity<>(sDto, HttpStatus.OK);
+    }
+
+    // Metodo per creare un nuovo studente
+
+    @PostMapping(value = "/student")
+    public ResponseEntity<StudentDto> createStudentDto(StudentDto studentDto){
+        Student s = studentDto.toStudent();
+        studentService.create(s);
+        StudentDto sDto = new StudentDto(s);
+        return new ResponseEntity<>(sDto, HttpStatus.CREATED);
     }
 }
