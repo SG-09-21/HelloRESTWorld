@@ -26,27 +26,39 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    @GetMapping(value = "/student") //quando viene invocato il metodo
+    // Metodo per ottenere tutti gli studenti
+    @GetMapping(value = "/student")
     public ResponseEntity<Iterable<StudentDto>> getAllStudent() {
         List<StudentDto> studentDtoList = new ArrayList<>();
+
+        // Ottenere la lista di tutti gli studenti dal servizio
         var students = studentService.getALLStudents();
+
+        // Iterare su ciascuno studente e creare un DTO per ciascuno
         for (Student student : students) {
             StudentDto studentDto = new StudentDto(student.getId(), student.getFullname());
             studentDtoList.add(studentDto);
         }
+
+        // Restituire la lista di DTO degli studenti con uno status HTTP OK
         return new ResponseEntity<>(studentDtoList, HttpStatus.OK);
     }
 
+    // Metodo per trovare uno studente per ID
     @GetMapping(value = "/student/{id}")
     public ResponseEntity<StudentDto> findByIdDto(@PathVariable long id) {
+        // Trovare uno studente per ID utilizzando il servizio
         Optional<Student> studentOptional = studentService.findStudentById(id);
 
+        // Verificare se lo studente è stato trovato o no
         if (studentOptional.isEmpty()) {
+            // Se non è stato trovato, restituire uno status HTTP NOT FOUND
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+
+        // Se lo studente è stato trovato, creare un DTO per lo studente e restituirlo con uno status HTTP OK
         Student s = studentOptional.get();
         StudentDto sDto = new StudentDto(s.getId(), s.getFullname());
         return new ResponseEntity<>(sDto, HttpStatus.OK);
     }
-
 }

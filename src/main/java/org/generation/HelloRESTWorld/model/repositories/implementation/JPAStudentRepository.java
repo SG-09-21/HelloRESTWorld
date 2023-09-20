@@ -16,29 +16,27 @@ import java.util.Optional;
 public class JPAStudentRepository implements StudentRepository {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    private EntityManager entityManager; // L'EntityManager gestisce l'interazione con il database
 
+    // Implementazione del metodo per ottenere tutti gli studenti
     @Override
     public List<Student> findAll() {
+        // Utilizza l'EntityManager per creare una query JPQL per ottenere tutti gli studenti
         var students = entityManager.createQuery("from Student", Student.class).getResultList();
-        //crea quary con entity manager 'JPQL' crea una quary dal nome della classe
         return students;
     }
 
+    // Implementazione del metodo per trovare uno studente per ID
     @Override
     public Optional<Student> findById(long id) {
+        // Utilizza l'EntityManager per cercare uno studente per ID utilizzando la classe Student
         return Optional.ofNullable(entityManager.find(Student.class, id));
-        /*
-        Student s = entityManager.find(Student.class, id);
-        if (s != null) {
-            return Optional.of(s);
-        }
-        return Optional.empty();
-         */
     }
 
+    // Implementazione del metodo per salvare uno studente
     @Override
     public Student save(Student s) {
+        // Utilizza l'EntityManager per salvare o aggiornare uno studente nel database
         return entityManager.merge(s);
     }
 }

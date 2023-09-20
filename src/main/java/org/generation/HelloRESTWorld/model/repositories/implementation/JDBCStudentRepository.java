@@ -5,11 +5,9 @@ import org.generation.HelloRESTWorld.model.repositories.abstraction.StudentRepos
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
 
-import javax.xml.transform.Result;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,19 +15,15 @@ import java.util.Optional;
 @Profile("jdbc")
 public class JDBCStudentRepository implements StudentRepository {
 
+    //Dichiarazione delle costanti
     public final static String JDBC_URL = "jdbc:mysql://localhost:3306/db_example";
-
     public final static String JDBC_USER = "root";
-
     public final static String JDBC_PASSWORD = "";
-
     public final static String ALL_STUDENTS = "SELECT id, firstname,lastname,birthdate FROM students";
-
     public final static String FIND_STUDENT_BY_ID = "SELECT firstname, lastname, birthdate FROM students WHERE id = ?";
+    public final static String INSERT_STUDENT = "INSERT INTO students(firstname, lastname, birthdate) VALUES (?, ?, ?)";
 
-    public final static String INSERT_STUDENT = "INSERT INTO students(firstname, lastname, birthdate VALUES (?, ?, ?)";
-
-    /*
+     /*
     @Override
     public Iterable<Student> getALLStudents() {
         Connection connection = null;
@@ -77,8 +71,12 @@ public class JDBCStudentRepository implements StudentRepository {
     }
     */
 
+
+
+
+    // Implementazione del metodo per ottenere tutti gli studenti
     @Override
-    public List<Student> findAll() { //TRY con Risorse
+    public List<Student> findAll() {
         List<Student> students = new ArrayList<>();
 
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
@@ -99,9 +97,9 @@ public class JDBCStudentRepository implements StudentRepository {
         }
     }
 
+    // Implementazione del metodo per trovare uno studente per ID
     @Override
     public Optional<Student> findById(long id) {
-
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(FIND_STUDENT_BY_ID);
         ) {
@@ -110,7 +108,7 @@ public class JDBCStudentRepository implements StudentRepository {
                 if (resultSet.next()) {
                     String firstname = resultSet.getString("firstname");
                     String lastname = resultSet.getString("lastname");
-                    LocalDate birthdate = resultSet.getDate("birthday").toLocalDate();
+                    LocalDate birthdate = resultSet.getDate("birthdate").toLocalDate();
                     Student student = new Student(id, firstname, lastname, birthdate);
                     return Optional.of(student);
                 } else {
@@ -122,6 +120,7 @@ public class JDBCStudentRepository implements StudentRepository {
         }
     }
 
+    // Implementazione del metodo per salvare uno studente
     @Override
     public Student save(Student s) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
