@@ -1,9 +1,11 @@
 package org.generation.HelloRESTWorld.model.repositories.implementation;
 
+import jakarta.persistence.EntityManager;
 import org.generation.HelloRESTWorld.model.Student;
 import org.generation.HelloRESTWorld.model.repositories.abstraction.StudentRepository;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.PutMapping;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -22,7 +24,8 @@ public class JDBCStudentRepository implements StudentRepository {
     public final static String ALL_STUDENTS = "SELECT id, firstname,lastname,birthdate FROM students";
     public final static String FIND_STUDENT_BY_ID = "SELECT firstname, lastname, birthdate FROM students WHERE id = ?";
     public final static String INSERT_STUDENT = "INSERT INTO students(firstname, lastname, birthdate) VALUES (?, ?, ?)";
-
+    public final static String DELATE_STUDENT = "DELETE FROM students WHERE id = ?";
+    public final static String UPDATA = "UPDATE students SET firstname=?, lastname=?, birthdate=? WHERE id=?";
      /*
     @Override
     public Iterable<Student> getALLStudents() {
@@ -70,9 +73,6 @@ public class JDBCStudentRepository implements StudentRepository {
         }
     }
     */
-
-
-
 
     // Implementazione del metodo per ottenere tutti gli studenti
     @Override
@@ -123,6 +123,16 @@ public class JDBCStudentRepository implements StudentRepository {
     // Implementazione del metodo per salvare uno studente
     @Override
     public Student save(Student s) {
+        if (s.getId() == 0) {
+            // L'entità non ha un ID, quindi è una nuova entità
+            return createStudent(s);
+        } else {
+            // L'entità ha un ID, quindi esiste già nel database e deve essere aggiornata
+            return updateStudent(s);
+        }
+    }
+
+    private Student createStudent(Student s) {
         try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
              PreparedStatement preparedStatement = connection.prepareStatement(INSERT_STUDENT, Statement.RETURN_GENERATED_KEYS)) {
             preparedStatement.setString(1, s.getFirstName());
@@ -140,8 +150,42 @@ public class JDBCStudentRepository implements StudentRepository {
                     s.setId(id);
                     return s;
                 } else {
-                    throw new SQLException("creazione dello studente é fallita, nessun ID generato");
+                    throw new SQLException("Creazione dello studente fallita, nessun ID generato");
                 }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Student updateStudent(Student s) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(UPDATA)) {
+            preparedStatement.setString(1, s.getFirstName());
+            preparedStatement.setString(2, s.getLastName());
+            preparedStatement.setDate(3, Date.valueOf(s.getBirthdate()));
+            preparedStatement.setLong(4, s.getId());
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Aggiornamento dello studente fallito");
+            }
+
+            return s;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        try (Connection connection = DriverManager.getConnection(JDBC_URL, JDBC_USER, JDBC_PASSWORD);
+             PreparedStatement preparedStatement = connection.prepareStatement(DELATE_STUDENT);
+        ) {
+            preparedStatement.setLong(1, id);
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows == 0) {
+                throw new SQLException("Eliminazione dello studente fallita: lo studente non esiste");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);

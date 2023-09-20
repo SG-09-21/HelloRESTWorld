@@ -6,10 +6,7 @@ import org.generation.HelloRESTWorld.model.services.abstraction.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -65,10 +62,31 @@ public class StudentController {
 
     // Metodo per creare un nuovo studente
     @PostMapping(value = "/student")
-    public ResponseEntity<StudentDto> createStudentDto(StudentDto studentDto){
+    public ResponseEntity<StudentDto> createStudentDto(@RequestBody StudentDto studentDto) {
         Student s = studentDto.toStudent();
         studentService.create(s);
         StudentDto sDto = new StudentDto(s);
         return new ResponseEntity<>(sDto, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(value = "/studenti{id}")
+    public ResponseEntity<Void> delateStudentDto(@PathVariable long id) {
+        Optional<Student> optionalStudent = studentService.findStudentById(id);
+        if (optionalStudent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        studentService.delate(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(value = "/student/{id}")
+    public ResponseEntity<Void> update(@RequestBody StudentDto studentDto, @PathVariable long id) {
+        Optional<Student> optionalStudent = studentService.findStudentById(id);
+        if (optionalStudent.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        Student s = studentDto.toStudent();
+        studentService.update(s);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

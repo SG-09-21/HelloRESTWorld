@@ -15,4 +15,6 @@ public interface StudentRepository {
 
     // Metodo per salvare uno studente
     Student save(Student s);
+
+    void deleteById(Long id);
 }

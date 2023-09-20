@@ -14,4 +14,8 @@ public interface StudentService {
 
     // Metodo per creare uno studente
     Student create(Student s);
+
+    void delate(long id);
+
+    void update(Student s);
 }

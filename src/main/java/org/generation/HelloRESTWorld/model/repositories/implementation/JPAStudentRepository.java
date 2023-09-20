@@ -41,4 +41,9 @@ public class JPAStudentRepository implements StudentRepository {
         // Utilizza l'EntityManager per salvare o aggiornare uno studente nel database
         return entityManager.merge(s);
     }
+
+    @Override
+    public void deleteById(Long id) {
+        entityManager.remove(entityManager.getReference(Student.class, id));
+    }
 }

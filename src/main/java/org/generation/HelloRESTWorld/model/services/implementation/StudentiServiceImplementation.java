@@ -39,4 +39,14 @@ public class StudentiServiceImplementation implements StudentService {
         var student = repository.save(s);
         return student;
     }
+
+    @Override
+    public void delate(long id) {
+        repository.deleteById(id);
+    }
+
+    @Override
+    public void update(Student s) {
+        repository.save(s);
+    }
 }

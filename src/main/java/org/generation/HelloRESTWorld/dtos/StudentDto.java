@@ -36,7 +36,7 @@ public class StudentDto {
 
     public Student toStudent() {
         String[] tokens = fullName.split(" ");
-        Student s = new Student(0, tokens[0], tokens[1], LocalDate.of(1000, 1, 1));
+        Student s = new Student(id, tokens[0], tokens[1], LocalDate.of(1000, 1, 1));
         return s;
     }
 }
